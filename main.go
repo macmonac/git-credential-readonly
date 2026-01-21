@@ -100,19 +100,9 @@ func (c *credential) match(req *credential) bool {
 	}
 
 	if req.path != "" {
-		// get username or org from repo path like `username-or-org/reponame.git`
-		reqOrg, _, hasSep := strings.Cut(req.path, "/")
-		if hasSep && reqOrg != "" {
-			matchReqPath := strings.TrimRight(reqOrg, "/")
-			matchConfigPath := strings.TrimRight(c.path, "/")
-			match = match && matchReqPath == matchConfigPath
-			log.Printf("match path by username or org: req.path=%v,config.path=%v,result=%v",
-				matchReqPath, matchConfigPath, match)
-		} else {
-			match = match && c.path == req.path
-			log.Printf("match path: req.path=%v,other.path=%v,result=%v",
-				c.path, req.path, match)
-		}
+		match = match && strings.HasPrefix(req.path, c.path)
+		log.Printf("match path by username or org: req.path=%v,config.path=%v,result=%v",
+				req.path, c.path, match)
 	}
 	return match
 }
