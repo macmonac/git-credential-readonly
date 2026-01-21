@@ -234,11 +234,18 @@ func getCredential(req *credential, credFile string) *credential {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
+		
+		if strings.HasPrefix(strings.TrimSpace(line), "#") || strings.HasPrefix(strings.TrimSpace(line), "//") {
+			log.Printf("ignore comment : %s", line)
+			continue
+		}
+
 		cred := parseCredential(line)
 		if cred == nil {
 			log.Printf("err malformed credential line: %s", line)
 			continue
 		}
+		
 		if cred.match(req) {
 			return cred
 		}
